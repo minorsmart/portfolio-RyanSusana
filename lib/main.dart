@@ -1,6 +1,3 @@
-import 'dart:math';
-
-import 'package:flare_flutter/flare_controls.dart';
 import "package:flutter/material.dart";
 import 'package:flutter/services.dart';
 import "package:flutter/widgets.dart";
@@ -66,16 +63,17 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
   @override
   void initState() {
     super.initState();
-    var flareControls = FlareControls();
 
-    initializedAnimation =
-        AnimationController(vsync: this, duration: Duration(milliseconds: 200));
+    initializedAnimation = AnimationController(
+        vsync: this, duration: Duration(milliseconds: 1000));
 
     Future.wait([
       categories.loadFromFiles(),
       Future.delayed(Duration(milliseconds: 3500))
     ])
-        .then((value) => initializedAnimation.forward())
+        .then((value) => initializedAnimation.forward().then((value) =>
+            Future.delayed(Duration(seconds: 2))
+                .then((value) => initializedAnimation.reverse())))
         .then((value) => setState(() {
               initiallyLoaded = true;
             }));
@@ -113,7 +111,7 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
       );
     } else {
       return Splash(
-        animation: CurvedAnimation(
+        open: CurvedAnimation(
             parent: initializedAnimation, curve: Curves.easeInOut),
       );
     }
@@ -121,55 +119,97 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
 }
 
 class Splash extends StatelessWidget {
-  final Animation<double> animation;
+  final Animation<double> open;
 
-  const Splash({Key key, this.animation}) : super(key: key);
+  final Animation<double> scale;
+  final Animation<double> opacity;
+  final Animation<double> offsetY;
+
+  Splash({Key key, this.open})
+      : scale = Tween<double>(begin: 0, end: 1).animate(
+          CurvedAnimation(
+            parent: open,
+            curve: Interval(
+              0.0,
+              0.600,
+              curve: Curves.bounceInOut,
+            ),
+          ),
+        ),
+        offsetY = Tween<double>(begin: 100, end: 0).animate(
+          CurvedAnimation(
+            parent: open,
+            curve: Interval(
+              0.200,
+              1.00,
+              curve: Curves.easeInOut,
+            ),
+          ),
+        ),
+        opacity = Tween<double>(begin: 0, end: 1).animate(
+          CurvedAnimation(
+            parent: open,
+            curve: Interval(
+              0.100,
+              0.400,
+              curve: Curves.ease,
+            ),
+          ),
+        ),
+        super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      color: Theme.of(context).accentColor,
-      child: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            AnimatedBuilder(
-              animation: animation,
-              builder: (context, child) {
-                return Opacity(
-                    opacity: Tween(begin: 1.0, end: 0.0).evaluate(animation),
-                    child: Transform.scale(
-                      scale: Tween(begin: 1.0, end: 0.2).evaluate(animation),
-                      child: Transform.rotate(
-                        angle: animation.value * pi,
-                        child: child,
+    return AnimatedBuilder(
+      animation: open,
+      builder: (context, child) {
+        return Container(
+          color: Theme.of(context).accentColor,
+          child: Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+                Transform.translate(
+                  offset: Offset(0, offsetY.value),
+                  child: Transform.scale(
+                    scale: scale.value,
+                    child: Opacity(
+                      opacity: opacity.value,
+                      child: SizedBox(
+                        width: 300,
+                        height: 300,
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: <Widget>[
+                            Text(
+                              "Welcome to the portfolio of",
+                              style: Theme.of(context).textTheme.bodyText1,
+                            ),
+                            Text(
+                              "Ryan Susana",
+                              style: Theme.of(context).textTheme.headline3,
+                            ),
+                          ],
+                        ),
                       ),
-                    ));
-              },
-              child: SizedBox(
-                width: 300,
-                height: 300,
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: <Widget>[
-                    Text(
-                      "Welcome to the portfolio of",
-                      style: Theme.of(context).textTheme.bodyText1,
                     ),
-                    Text(
-                      "Ryan Susana",
-                      style: Theme.of(context).textTheme.headline3,
-                    ),
-                  ],
+                  ),
                 ),
-              ),
+                SizedBox(
+                  width: 70,
+                  height: 70,
+                  child: this.open.isCompleted
+                      ? CircularProgressIndicator(
+                          strokeWidth: 2.0,
+                          backgroundColor: Colors.red,
+                        )
+                      : Container(),
+                )
+              ],
             ),
-            CircularProgressIndicator(
-              backgroundColor: Colors.red,
-            )
-          ],
-        ),
-      ),
+          ),
+        );
+      },
     );
   }
 }

@@ -42,6 +42,17 @@ class PostCard extends StatelessWidget {
                     width: double.infinity,
                     child: Image.network(
                       this.post.image,
+                      loadingBuilder: (context, child, loadingProgress) {
+                        if (loadingProgress == null) return child;
+                        return Center(
+                          child: CircularProgressIndicator(
+                            value: loadingProgress.expectedTotalBytes != null
+                                ? loadingProgress.cumulativeBytesLoaded /
+                                    loadingProgress.expectedTotalBytes
+                                : null,
+                          ),
+                        );
+                      },
                       fit: BoxFit.cover,
                       repeat: ImageRepeat.repeat,
                     ),
@@ -162,7 +173,7 @@ class PostContent extends StatelessWidget {
           ),
         ),
         SizedBox(
-          width: wideScreen ? size.width / 2:double.infinity,
+          width: wideScreen ? size.width / 2 : double.infinity,
           child: wideScreen
               ? SingleChildScrollView(
                   child: PostHtmlContent(post: post),
@@ -197,7 +208,8 @@ class PostHtmlContent extends StatelessWidget {
             print('Could not launch $url');
           }
         },
-        defaultTextStyle: Theme.of(context).textTheme.bodyText1.copyWith(color: Colors.white),
+        defaultTextStyle:
+            Theme.of(context).textTheme.bodyText1.copyWith(color: Colors.white),
         data: """
         <h1>${post.title}</h1>
         <h1>HTML Ipsum Presents</h1>
