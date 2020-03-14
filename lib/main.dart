@@ -69,14 +69,12 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
 
     Future.wait([
       categories.loadFromFiles(),
-      Future.delayed(Duration(milliseconds: 3500))
+      Future.delayed(Duration(milliseconds: 3500)),
+      Future.delayed(Duration(milliseconds: 1000))
+          .then((value) => initializedAnimation.forward())
     ])
-        .then((value) => initializedAnimation.forward().then((value) =>
-            Future.delayed(Duration(seconds: 2))
-                .then((value) => initializedAnimation.reverse())))
-        .then((value) => setState(() {
-              initiallyLoaded = true;
-            }));
+        .then((value) => (value) => initializedAnimation.reverse())
+        .then((value) => setState(() => initiallyLoaded = true));
   }
 
   @override
