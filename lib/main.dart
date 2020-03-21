@@ -1,13 +1,33 @@
+import 'package:fluro/fluro.dart';
 import "package:flutter/material.dart";
 import 'package:flutter/services.dart';
 import "package:flutter/widgets.dart";
 import "package:google_fonts/google_fonts.dart";
+import 'package:portfolio_minor/post.dart';
+import 'package:provider/provider.dart';
 
 import "category.dart";
 import "domain.dart";
 
 //Test build
-void main() => runApp(MyApp());
+void main() {
+  var router = Router();
+  router.define(
+    "/post/:category/:id",
+    handler: Handler(handlerFunc: (context, params) {
+      return PostScreen(
+        postId: params["id"][0],
+        tag: params["category"][0],
+      );
+    }),
+  );
+  runApp(
+    Provider.value(
+      value: router,
+      child: MyApp(),
+    ),
+  );
+}
 
 class MyApp extends StatelessWidget {
   @override
@@ -15,6 +35,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: "Ryan Portfolio",
+      onGenerateRoute: Provider.of<Router>(context).generator,
       routes: <String, WidgetBuilder>{
         '/': (context) => Home(),
       },
@@ -24,7 +45,7 @@ class MyApp extends StatelessWidget {
         brightness: Brightness.dark,
         accentColor: Color(0xFF090909),
         appBarTheme: AppBarTheme(
-          color: Color(0xFF090909),
+          color: Color(0xFF191919),
         ),
         textTheme: GoogleFonts.latoTextTheme(
           ThemeData.dark().textTheme.copyWith(
@@ -56,8 +77,9 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
-  Categories categories = Categories();
   bool initiallyLoaded = false;
+
+  List<Category> categories;
 
   AnimationController initializedAnimation;
 
@@ -69,13 +91,19 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
         vsync: this, duration: Duration(milliseconds: 1000));
 
     Future.wait([
-      categories.load(),
+      loadCategories(),
       Future.delayed(Duration(milliseconds: 3500)),
       Future.delayed(Duration(milliseconds: 1000))
           .then((value) => initializedAnimation.forward())
     ])
-        .then((value) => (value) => initializedAnimation.reverse())
+        .then((value) => initializedAnimation.reverse())
         .then((value) => setState(() => initiallyLoaded = true));
+  }
+
+  Future loadCategories()  {
+    return  Domain.load().then((value) => setState(() {
+          categories = value;
+        }));
   }
 
   @override
@@ -89,33 +117,34 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
     if (initiallyLoaded) {
       return WillPopScope(
         onWillPop: () async => false,
-        child: Scaffold(
-            appBar: AppBar(
-              elevation: 0,
-              automaticallyImplyLeading: false,
-              title: Text("Test"),
-            ),
-            body: RefreshIndicator(
-              color: Theme.of(context).primaryColor,
-              backgroundColor: Color(0xff111111),
-              onRefresh: () {
-                return categories.load().then((value) => setState(() {}));
-              },
-              child: ListView(
-                children: categories.categories
-                    .where((element) => element.posts.length > 0)
-                    .toList()
-                    .asMap()
-                    .entries
-                    .map((entry) => CategorySection(
-                          category: entry.value,
-                          backgroundColor: entry.key.isOdd
-                              ? Color(0xFF222222)
-                              : Color(0xFF181818),
-                        ))
-                    .toList(),
-              ),
-            )),
+        child: Container(
+          color: Theme.of(context).appBarTheme.color,
+          child: SafeArea(
+            bottom: false,
+            child: Scaffold(
+                body: RefreshIndicator(
+                  color: Theme.of(context).primaryColor,
+                  backgroundColor: Color(0xff111111),
+                  onRefresh: () {
+                    return Domain.load().then((value) => setState(() {}));
+                  },
+                  child: ListView(
+                    children: categories
+                        .where((element) => element.posts.length > 0)
+                        .toList()
+                        .asMap()
+                        .entries
+                        .map((entry) => CategorySection(
+                              category: entry.value,
+                              backgroundColor: entry.key.isOdd
+                                  ? Color(0xFF222222)
+                                  : Theme.of(context).appBarTheme.color,
+                            ))
+                        .toList(),
+                  ),
+                )),
+          ),
+        ),
       );
     } else {
       return Splash(

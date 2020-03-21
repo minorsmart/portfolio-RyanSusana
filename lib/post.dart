@@ -17,17 +17,13 @@ class PostCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    String tag = Provider.of<Category>(context).id + "/" + post.id;
+    String category = Provider.of<Category>(context).id;
     return Material(
       clipBehavior: Clip.hardEdge,
       borderRadius: BorderRadius.all(Radius.circular(8)),
       child: InkWell(
         onTap: () {
-          Navigator.of(context).push(MaterialPageRoute(
-              builder: (context) => PostScreen(
-                    post: post,
-                    tag: tag,
-                  )));
+          Navigator.pushNamed(context, "/post/$category/${post.id}");
         },
         child: Ink(
           width: cardSize,
@@ -38,7 +34,7 @@ class PostCard extends StatelessWidget {
               Expanded(
                 flex: 90,
                 child: Hero(
-                  tag: tag,
+                  tag: "$category/${post.id}",
                   child: SizedBox(
                     width: double.infinity,
                     child: Image.network(
@@ -47,6 +43,7 @@ class PostCard extends StatelessWidget {
                         if (loadingProgress == null) return child;
                         return Center(
                           child: CircularProgressIndicator(
+                            valueColor: AlwaysStoppedAnimation(Theme.of(context).primaryColor),
                             value: loadingProgress.expectedTotalBytes != null
                                 ? loadingProgress.cumulativeBytesLoaded /
                                     loadingProgress.expectedTotalBytes
@@ -70,7 +67,10 @@ class PostCard extends StatelessWidget {
                       padding: const EdgeInsets.all(10.0),
                       child: Text(
                         this.post.title,
-                        style: Theme.of(context).textTheme.headline6.copyWith(fontSize: 18),
+                        style: Theme.of(context)
+                            .textTheme
+                            .headline6
+                            .copyWith(fontSize: 18),
                       ),
                     ),
                   ),
@@ -118,14 +118,32 @@ class PostList extends StatelessWidget {
   }
 }
 
-class PostScreen extends StatelessWidget {
+class PostScreen extends StatefulWidget {
   final String tag;
   final Post post;
+  final String postId;
 
-  const PostScreen({Key key, this.post, @required this.tag}) : super(key: key);
+  PostScreen({Key key, this.post, postId, this.tag})
+      : this.postId = postId ?? post.id,
+        super(key: key);
+
+  @override
+  _PostScreenState createState() => _PostScreenState();
+}
+
+class _PostScreenState extends State<PostScreen> {
+  Post post;
 
   @override
   Widget build(BuildContext context) {
+    if (this.post == null) {
+      return Container(
+        color: Theme.of(context).accentColor,
+      );
+    }
+
+    var tag = "${(widget.tag ?? Uuid().v4())}/${post.id}";
+
     var size = MediaQuery.of(context).size;
     bool wideScreen = size.width > size.height;
     return Scaffold(
@@ -135,12 +153,35 @@ class PostScreen extends StatelessWidget {
       ),
       body: Container(
         child: !wideScreen
-            ? SingleChildScrollView(
-                child: PostContent(tag: tag, post: post),
+            ? RefreshIndicator(
+                color: Theme.of(context).primaryColor,
+                onRefresh: () => reloadPost(),
+                child: SingleChildScrollView(
+                  physics: AlwaysScrollableScrollPhysics(),
+                  child: PostContent(
+                    tag: tag,
+                    post: post,
+                  ),
+                ),
               )
-            : PostContent(tag: tag, post: post),
+            : PostContent(tag: widget.tag, post: post),
       ),
     );
+  }
+
+  @override
+  void initState() {
+    super.initState();
+
+    post = Domain.getCachedPost(widget.postId);
+    reloadPost();
+  }
+
+  Future<void> reloadPost() async {
+    var newPost = await Post.getById(widget.postId);
+    setState(() {
+      this.post = newPost;
+    });
   }
 }
 
