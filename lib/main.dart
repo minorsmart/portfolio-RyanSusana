@@ -20,6 +20,7 @@ class MyApp extends StatelessWidget {
       },
       theme: ThemeData(
         primarySwatch: Colors.red,
+        primaryColor: Colors.red,
         brightness: Brightness.dark,
         accentColor: Color(0xFF090909),
         appBarTheme: AppBarTheme(
@@ -68,7 +69,7 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
         vsync: this, duration: Duration(milliseconds: 1000));
 
     Future.wait([
-      categories.loadFromFiles(),
+      categories.load(),
       Future.delayed(Duration(milliseconds: 3500)),
       Future.delayed(Duration(milliseconds: 1000))
           .then((value) => initializedAnimation.forward())
@@ -94,17 +95,26 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
               automaticallyImplyLeading: false,
               title: Text("Test"),
             ),
-            body: ListView(
-              children: categories.categories
-                  .asMap()
-                  .entries
-                  .map((entry) => CategorySection(
-                        category: entry.value,
-                        backgroundColor: entry.key.isOdd
-                            ? Color(0xFF222222)
-                            : Color(0xFF181818),
-                      ))
-                  .toList(),
+            body: RefreshIndicator(
+              color: Theme.of(context).primaryColor,
+              backgroundColor: Color(0xff111111),
+              onRefresh: () {
+                return categories.load().then((value) => setState(() {}));
+              },
+              child: ListView(
+                children: categories.categories
+                    .where((element) => element.posts.length > 0)
+                    .toList()
+                    .asMap()
+                    .entries
+                    .map((entry) => CategorySection(
+                          category: entry.value,
+                          backgroundColor: entry.key.isOdd
+                              ? Color(0xFF222222)
+                              : Color(0xFF181818),
+                        ))
+                    .toList(),
+              ),
             )),
       );
     } else {
@@ -199,7 +209,7 @@ class Splash extends StatelessWidget {
                   child: this.open.isCompleted
                       ? CircularProgressIndicator(
                           strokeWidth: 2.0,
-                          backgroundColor: Colors.red,
+                          backgroundColor: Theme.of(context).primaryColor,
                         )
                       : Container(),
                 )

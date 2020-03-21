@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart' show rootBundle;
+import 'package:http/http.dart' as http;
 import 'package:json_annotation/json_annotation.dart';
 
 part 'domain.g.dart';
@@ -45,7 +46,6 @@ class Categories with ChangeNotifier {
   List<Post> _allPosts;
   Map<String, Category> _allCategories;
 
-
   bool get loading => _allPosts == null;
 
   List<Category> _merge(List<Category> categories, List<Post> posts) {
@@ -65,11 +65,19 @@ class Categories with ChangeNotifier {
     return this.categories;
   }
 
-  Future<List<Category>> loadFromFiles() async {
-    var categories = (await parseJsonFromAssets("assets/categories.json"))
-        .map((category) => Category.fromJson(category));
-    var posts = (await parseJsonFromAssets("assets/posts.json"))
-        .map((post) => Post.fromJson(post));
+  Future<Iterable<dynamic>> getFromOnline(String p) async {
+    return jsonDecode(
+        (await http.get("https://ryansusana.com/$p")).body)["values"];
+  }
+
+  Future<List<Category>> load() async {
+    Iterable<Category> categories =
+        (await getFromOnline("categories")).map((e) => Category.fromJson(e));
+    Iterable<Post> posts = (await getFromOnline("posts")).map((e) {
+      e["image"] = "https://ryansusana.com${e["image"]}";
+      return e;
+    }).map((e) => Post.fromJson(e));
+
     return _merge(categories.toList(), posts.toList());
   }
 
