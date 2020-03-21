@@ -88,10 +88,10 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
   void initState() {
     super.initState();
 
-    if (Domain.needToLoad) {
-      initializedAnimation = AnimationController(
-          vsync: this, duration: Duration(milliseconds: 1000));
+    initializedAnimation = AnimationController(
+        vsync: this, duration: Duration(milliseconds: 1000));
 
+    if (Domain.needToLoad) {
       Future.wait([
         loadCategories(),
         Future.delayed(Duration(milliseconds: 3500)),
@@ -101,7 +101,9 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
           .then((value) => initializedAnimation.reverse())
           .then((value) => setState(() => initiallyLoaded = true));
     } else {
-      this.initiallyLoaded = true;
+      setState(() {
+        this.initiallyLoaded = true;
+      });
     }
   }
 
