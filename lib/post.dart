@@ -36,7 +36,7 @@ class PostCard extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
               Expanded(
-                flex: 3,
+                flex: 90,
                 child: Hero(
                   tag: tag,
                   child: SizedBox(
@@ -61,7 +61,7 @@ class PostCard extends StatelessWidget {
                 ),
               ),
               Expanded(
-                flex: 1,
+                flex: 35,
                 child: Ink(
                   color: Color(0x00ffffff),
                   child: Align(
@@ -70,7 +70,7 @@ class PostCard extends StatelessWidget {
                       padding: const EdgeInsets.all(10.0),
                       child: Text(
                         this.post.title,
-                        style: Theme.of(context).textTheme.headline6,
+                        style: Theme.of(context).textTheme.headline6.copyWith(fontSize: 18),
                       ),
                     ),
                   ),

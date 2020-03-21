@@ -71,14 +71,15 @@ class Categories with ChangeNotifier {
   }
 
   Future<List<Category>> load() async {
-    Iterable<Category> categories =
-        (await getFromOnline("categories")).map((e) => Category.fromJson(e));
+    List<Category> categories =
+        (await getFromOnline("categories")).map((e) => Category.fromJson(e)).toList();
     Iterable<Post> posts = (await getFromOnline("posts")).map((e) {
       e["image"] = "https://ryansusana.com${e["image"]}";
       return e;
     }).map((e) => Post.fromJson(e));
 
-    return _merge(categories.toList(), posts.toList());
+    categories.shuffle();
+    return _merge(categories, posts.toList());
   }
 
   Future<Iterable<dynamic>> parseJsonFromAssets(String assetsPath) async {
