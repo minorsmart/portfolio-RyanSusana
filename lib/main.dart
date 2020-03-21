@@ -36,35 +36,37 @@ class MyApp extends StatelessWidget {
       color: Color(0xFF191919),
       child: ConstrainedBox(
         constraints: BoxConstraints(maxHeight: 900, maxWidth: 500),
-        child: MaterialApp(
-          debugShowCheckedModeBanner: false,
-          title: "Ryan Portfolio",
-          onGenerateRoute: Provider.of<Router>(context).generator,
-          routes: <String, WidgetBuilder>{
-            '/': (context) => Home(),
-          },
-          theme: ThemeData(
-            primarySwatch: Colors.red,
-            primaryColor: Colors.red,
-            brightness: Brightness.dark,
-            accentColor: Color(0xFF090909),
-            appBarTheme: AppBarTheme(
-              color: Color(0xFF191919),
-            ),
-            textTheme: GoogleFonts.latoTextTheme(
-              ThemeData.dark().textTheme.copyWith(
-                    button: TextStyle(fontWeight: FontWeight.w300),
-                    headline3: TextStyle(
-                        fontSize: 40,
-                        fontWeight: FontWeight.w300,
-                        color: Colors.white),
-                    bodyText1: TextStyle(
-                        fontSize: 17,
-                        fontWeight: FontWeight.w300,
-                        letterSpacing: 0.3,
-                        wordSpacing: 1.3,
-                        color: Colors.grey),
-                  ),
+        child: Center(
+          child: MaterialApp(
+            debugShowCheckedModeBanner: false,
+            title: "Ryan Portfolio",
+            onGenerateRoute: Provider.of<Router>(context).generator,
+            routes: <String, WidgetBuilder>{
+              '/': (context) => Home(),
+            },
+            theme: ThemeData(
+              primarySwatch: Colors.red,
+              primaryColor: Colors.red,
+              brightness: Brightness.dark,
+              accentColor: Color(0xFF090909),
+              appBarTheme: AppBarTheme(
+                color: Color(0xFF191919),
+              ),
+              textTheme: GoogleFonts.latoTextTheme(
+                ThemeData.dark().textTheme.copyWith(
+                      button: TextStyle(fontWeight: FontWeight.w300),
+                      headline3: TextStyle(
+                          fontSize: 40,
+                          fontWeight: FontWeight.w300,
+                          color: Colors.white),
+                      bodyText1: TextStyle(
+                          fontSize: 17,
+                          fontWeight: FontWeight.w300,
+                          letterSpacing: 0.3,
+                          wordSpacing: 1.3,
+                          color: Colors.grey),
+                    ),
+              ),
             ),
           ),
         ),
