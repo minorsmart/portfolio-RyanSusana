@@ -21,6 +21,7 @@ void main() {
       );
     }),
   );
+
   runApp(
     Provider.value(
       value: router,
@@ -87,21 +88,25 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
   void initState() {
     super.initState();
 
-    initializedAnimation = AnimationController(
-        vsync: this, duration: Duration(milliseconds: 1000));
+    if (Domain.needToLoad) {
+      initializedAnimation = AnimationController(
+          vsync: this, duration: Duration(milliseconds: 1000));
 
-    Future.wait([
-      loadCategories(),
-      Future.delayed(Duration(milliseconds: 3500)),
-      Future.delayed(Duration(milliseconds: 1000))
-          .then((value) => initializedAnimation.forward())
-    ])
-        .then((value) => initializedAnimation.reverse())
-        .then((value) => setState(() => initiallyLoaded = true));
+      Future.wait([
+        loadCategories(),
+        Future.delayed(Duration(milliseconds: 3500)),
+        Future.delayed(Duration(milliseconds: 1000))
+            .then((value) => initializedAnimation.forward())
+      ])
+          .then((value) => initializedAnimation.reverse())
+          .then((value) => setState(() => initiallyLoaded = true));
+    } else {
+      this.initiallyLoaded = true;
+    }
   }
 
-  Future loadCategories()  {
-    return  Domain.load().then((value) => setState(() {
+  Future loadCategories() {
+    return Domain.load().then((value) => setState(() {
           categories = value;
         }));
   }
@@ -123,26 +128,26 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
             bottom: false,
             child: Scaffold(
                 body: RefreshIndicator(
-                  color: Theme.of(context).primaryColor,
-                  backgroundColor: Color(0xff111111),
-                  onRefresh: () {
-                    return Domain.load().then((value) => setState(() {}));
-                  },
-                  child: ListView(
-                    children: categories
-                        .where((element) => element.posts.length > 0)
-                        .toList()
-                        .asMap()
-                        .entries
-                        .map((entry) => CategorySection(
-                              category: entry.value,
-                              backgroundColor: entry.key.isOdd
-                                  ? Color(0xFF222222)
-                                  : Theme.of(context).appBarTheme.color,
-                            ))
-                        .toList(),
-                  ),
-                )),
+              color: Theme.of(context).primaryColor,
+              backgroundColor: Color(0xff111111),
+              onRefresh: () {
+                return Domain.load().then((value) => setState(() {}));
+              },
+              child: ListView(
+                children: categories
+                    .where((element) => element.posts.length > 0)
+                    .toList()
+                    .asMap()
+                    .entries
+                    .map((entry) => CategorySection(
+                          category: entry.value,
+                          backgroundColor: entry.key.isOdd
+                              ? Color(0xFF222222)
+                              : Theme.of(context).appBarTheme.color,
+                        ))
+                    .toList(),
+              ),
+            )),
           ),
         ),
       );

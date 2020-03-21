@@ -43,7 +43,8 @@ class PostCard extends StatelessWidget {
                         if (loadingProgress == null) return child;
                         return Center(
                           child: CircularProgressIndicator(
-                            valueColor: AlwaysStoppedAnimation(Theme.of(context).primaryColor),
+                            valueColor: AlwaysStoppedAnimation(
+                                Theme.of(context).primaryColor),
                             value: loadingProgress.expectedTotalBytes != null
                                 ? loadingProgress.cumulativeBytesLoaded /
                                     loadingProgress.expectedTotalBytes
@@ -174,6 +175,9 @@ class _PostScreenState extends State<PostScreen> {
     super.initState();
 
     post = Domain.getCachedPost(widget.postId);
+    if (post == null) {
+      Domain.load();
+    }
     reloadPost();
   }
 

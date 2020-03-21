@@ -54,7 +54,7 @@ class Domain with ChangeNotifier {
   static List<Post> _allPosts;
   static Map<String, Category> _allCategories;
 
-  bool get loading => _allPosts == null;
+  static bool get needToLoad => _allPosts == null;
 
   static List<Category> _merge(List<Category> categories, List<Post> posts) {
     categories.forEach((element) => element.posts = []);
