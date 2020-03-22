@@ -133,7 +133,7 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
               color: Theme.of(context).primaryColor,
               backgroundColor: Color(0xff111111),
               onRefresh: () {
-                return Domain.load().then((value) => setState(() {}));
+                return loadCategories();
               },
               child: ListView(
                 children: categories

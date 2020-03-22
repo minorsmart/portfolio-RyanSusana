@@ -88,13 +88,14 @@ class Domain with ChangeNotifier {
     List<Category> categories = (await getFromOnline("categories"))
         .map((e) => Category.fromJson(e))
         .toList();
-    Iterable<Post> posts = (await getFromOnline("posts")).map((e) {
+    List<Post> posts = (await getFromOnline("posts")).map((e) {
       e["image"] = "https://ryansusana.com${e["image"]}";
       return e;
-    }).map((e) => Post.fromJson(e));
+    }).map((e) => Post.fromJson(e)).toList();
 
     categories.shuffle();
-    return _merge(categories, posts.toList());
+    posts.shuffle();
+    return _merge(categories, posts);
   }
 
   static Future<Iterable<dynamic>> parseJsonFromAssets(
