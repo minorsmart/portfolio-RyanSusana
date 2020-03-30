@@ -11,10 +11,12 @@ part 'domain.g.dart';
 @JsonSerializable(nullable: true)
 class Post {
   final String id, title, content, image;
+  final int week;
   final List<String> categoryIds;
 
   const Post({
     this.id: "x",
+    this.week: 0,
     this.title: "DevCon 2020",
     this.content: "",
     this.image:
@@ -88,10 +90,13 @@ class Domain with ChangeNotifier {
     List<Category> categories = (await getFromOnline("categories"))
         .map((e) => Category.fromJson(e))
         .toList();
-    List<Post> posts = (await getFromOnline("posts")).map((e) {
-      e["image"] = "https://ryansusana.com${e["image"]}";
-      return e;
-    }).map((e) => Post.fromJson(e)).toList();
+    List<Post> posts = (await getFromOnline("posts"))
+        .map((e) {
+          e["image"] = "https://ryansusana.com${e["image"]}";
+          return e;
+        })
+        .map((e) => Post.fromJson(e))
+        .toList();
 
     categories.shuffle();
     posts.shuffle();

@@ -76,7 +76,7 @@ class PostCard extends StatelessWidget {
                     ),
                   ),
                 ),
-              )
+              ),
             ],
           ),
         ),
@@ -147,25 +147,28 @@ class _PostScreenState extends State<PostScreen> {
 
     var size = MediaQuery.of(context).size;
     bool wideScreen = size.width > size.height;
-    return Scaffold(
-      appBar: AppBar(
-        elevation: 0,
-        title: Text(post.title),
-      ),
-      body: Container(
-        child: !wideScreen
-            ? RefreshIndicator(
-                color: Theme.of(context).primaryColor,
-                onRefresh: () => reloadPost(),
-                child: SingleChildScrollView(
-                  physics: AlwaysScrollableScrollPhysics(),
-                  child: PostContent(
-                    tag: tag,
-                    post: post,
+    return ConstrainedBox(
+      constraints: BoxConstraints(maxWidth: 200, maxHeight: 500),
+      child: Scaffold(
+        appBar: AppBar(
+          elevation: 0,
+          title: Text(post.title),
+        ),
+        body: Container(
+          child: !wideScreen
+              ? RefreshIndicator(
+                  color: Theme.of(context).primaryColor,
+                  onRefresh: () => reloadPost(),
+                  child: SingleChildScrollView(
+                    physics: AlwaysScrollableScrollPhysics(),
+                    child: PostContent(
+                      tag: tag,
+                      post: post,
+                    ),
                   ),
-                ),
-              )
-            : PostContent(tag: widget.tag, post: post),
+                )
+              : PostContent(tag: widget.tag, post: post),
+        ),
       ),
     );
   }

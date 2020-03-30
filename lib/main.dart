@@ -22,6 +22,8 @@ void main() {
     }),
   );
 
+  Domain.load();
+
   runApp(
     Provider.value(
       value: router,
@@ -52,11 +54,11 @@ class MyApp extends StatelessWidget {
           ThemeData.dark().textTheme.copyWith(
                 button: TextStyle(fontWeight: FontWeight.w300),
                 headline3: TextStyle(
-                    fontSize: 40,
-                    fontWeight: FontWeight.w300,
+                    fontSize: 30,
+                    fontWeight: FontWeight.w800,
                     color: Colors.white),
                 bodyText1: TextStyle(
-                    fontSize: 17,
+                    fontSize: 18,
                     fontWeight: FontWeight.w300,
                     letterSpacing: 0.3,
                     wordSpacing: 1.3,
