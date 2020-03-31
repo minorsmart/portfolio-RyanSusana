@@ -9,6 +9,7 @@ part of 'domain.dart';
 Post _$PostFromJson(Map<String, dynamic> json) {
   return Post(
     id: json['id'] as String,
+    week: json['week'] as int,
     title: json['title'] as String,
     content: json['content'] as String,
     image: json['image'] as String,
@@ -22,6 +23,7 @@ Map<String, dynamic> _$PostToJson(Post instance) => <String, dynamic>{
       'title': instance.title,
       'content': instance.content,
       'image': instance.image,
+      'week': instance.week,
       'categoryIds': instance.categoryIds,
     };
 
