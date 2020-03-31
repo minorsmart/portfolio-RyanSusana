@@ -2,7 +2,6 @@ import 'dart:convert';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
-import 'package:flutter/services.dart' show rootBundle;
 import 'package:http/http.dart' as http;
 import 'package:json_annotation/json_annotation.dart';
 
@@ -36,7 +35,7 @@ class Post {
 
   static Future<Iterable<Post>> qry(
       [Map<String, String> options = const {}]) async {
-    Uri uri = Uri.https(null, "//ryansusana.com/posts", options);
+    Uri uri = Uri.https("ryansusana.com", "/posts", options);
 
     var response = await http.get(uri);
 
@@ -68,7 +67,7 @@ class Category {
 
   static Future<Iterable<Category>> qry(
       [Map<String, String> options = const {}]) async {
-    Uri uri = Uri.https(null, "//ryansusana.com/categories", options);
+    Uri uri = Uri.https("ryansusana.com", "/categories", options);
 
     print(uri);
     var response = await http.get(uri);

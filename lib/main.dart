@@ -6,7 +6,7 @@ import "package:google_fonts/google_fonts.dart";
 import 'package:portfolio_minor/post.dart';
 import 'package:provider/provider.dart';
 
-import "category.dart";
+import 'category.dart';
 import "domain.dart";
 
 //Test build
@@ -40,7 +40,8 @@ class MyApp extends StatelessWidget {
       title: "Ryan Portfolio",
       onGenerateRoute: Provider.of<Router>(context).generator,
       routes: <String, WidgetBuilder>{
-        '/': (context) => Home(),
+        '/home': (context) => Home(),
+        '/': (context) => Splash(),
       },
       theme: ThemeData(
         primarySwatch: Colors.red,
@@ -80,8 +81,6 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
-  bool initiallyLoaded = false;
-
   List<Category> categories;
 
   AnimationController initializedAnimation;
@@ -89,32 +88,12 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
   @override
   void initState() {
     super.initState();
-
-    initializedAnimation = AnimationController(
-        vsync: this, duration: Duration(milliseconds: 1000));
   }
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    load();
-  }
-
-  void load() {
-    if (Domain.needToLoad) {
-      Future.wait([
-        loadCategories(),
-        Future.delayed(Duration(milliseconds: 3500)),
-        Future.delayed(Duration(milliseconds: 1000))
-            .then((value) => initializedAnimation.forward())
-      ])
-          .then((value) => initializedAnimation.reverse())
-          .then((value) => setState(() => initiallyLoaded = true));
-    } else {
-      setState(() {
-        this.initiallyLoaded = true;
-      });
-    }
+    loadCategories();
   }
 
   Future loadCategories() {
@@ -124,22 +103,20 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
   }
 
   @override
-  void dispose() {
-    super.dispose();
-    initializedAnimation.dispose();
-  }
-
-  @override
   Widget build(BuildContext context) {
-    if (initiallyLoaded) {
-      return WillPopScope(
-        onWillPop: () async => false,
-        child: Container(
-          color: Theme.of(context).appBarTheme.color,
-          child: SafeArea(
-            bottom: false,
-            child: Scaffold(
-                body: RefreshIndicator(
+    if (categories == null) {
+      return Container(
+        color: Colors.green,
+      );
+    }
+    return WillPopScope(
+      onWillPop: () async => false,
+      child: Container(
+        color: Theme.of(context).appBarTheme.color,
+        child: SafeArea(
+          bottom: false,
+          child: Scaffold(
+            body: RefreshIndicator(
               color: Theme.of(context).primaryColor,
               backgroundColor: Color(0xff111111),
               onRefresh: () {
@@ -159,111 +136,84 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
                         ))
                     .toList(),
               ),
-            )),
+            ),
           ),
         ),
-      );
-    } else {
-      return Splash(
-        open: CurvedAnimation(
-            parent: initializedAnimation, curve: Curves.easeInOut),
-      );
-    }
+      ),
+    );
   }
 }
 
-class Splash extends StatelessWidget {
-  final Animation<double> open;
+class Splash extends StatefulWidget {
+  @override
+  _SplashState createState() => _SplashState();
+}
 
-  final Animation<double> scale;
-  final Animation<double> opacity;
-  final Animation<double> offsetY;
+class _SplashState extends State<Splash> with SingleTickerProviderStateMixin {
+  AnimationController initializedAnimation;
 
-  Splash({Key key, this.open})
-      : scale = Tween<double>(begin: 0, end: 1).animate(
-          CurvedAnimation(
-            parent: open,
-            curve: Interval(
-              0.0,
-              0.600,
-              curve: Curves.bounceInOut,
-            ),
-          ),
-        ),
-        offsetY = Tween<double>(begin: 100, end: 0).animate(
-          CurvedAnimation(
-            parent: open,
-            curve: Interval(
-              0.200,
-              1.00,
-              curve: Curves.easeInOut,
-            ),
-          ),
-        ),
-        opacity = Tween<double>(begin: 0, end: 1).animate(
-          CurvedAnimation(
-            parent: open,
-            curve: Interval(
-              0.100,
-              0.400,
-              curve: Curves.ease,
-            ),
-          ),
-        ),
-        super(key: key);
+  void load() {
+    Future.wait([
+      Future.delayed(Duration(milliseconds: 3500)),
+      Future.delayed(Duration(milliseconds: 1000))
+          .then((value) => initializedAnimation.forward())
+    ])
+        .then((value) => initializedAnimation.reverse())
+        .then((value) => Navigator.of(context).pushReplacementNamed("/home"));
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    initializedAnimation.dispose();
+  }
+
+  @override
+  void initState() {
+    super.initState();
+
+    initializedAnimation = AnimationController(
+        vsync: this, duration: Duration(milliseconds: 1000));
+
+    load();
+  }
 
   @override
   Widget build(BuildContext context) {
-    return AnimatedBuilder(
-      animation: open,
-      builder: (context, child) {
-        return Container(
-          color: Theme.of(context).accentColor,
-          child: Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: <Widget>[
-                Transform.translate(
-                  offset: Offset(0, offsetY.value),
-                  child: Transform.scale(
-                    scale: scale.value,
-                    child: Opacity(
-                      opacity: opacity.value,
-                      child: SizedBox(
-                        width: 300,
-                        height: 300,
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: <Widget>[
-                            Text(
-                              "Welcome to the portfolio of",
-                              style: Theme.of(context).textTheme.bodyText1,
-                            ),
-                            Text(
-                              "Ryan Susana",
-                              style: Theme.of(context).textTheme.headline3,
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
+    return Container(
+      color: Theme.of(context).accentColor,
+      child: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+            SizedBox(
+              width: 300,
+              height: 300,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: <Widget>[
+                  Text(
+                    "Welcome to the portfolio of",
+                    style: Theme.of(context).textTheme.bodyText1,
                   ),
-                ),
-                SizedBox(
-                  width: 70,
-                  height: 70,
-                  child: this.open.isCompleted
-                      ? CircularProgressIndicator(
-                          strokeWidth: 2.0,
-                          backgroundColor: Theme.of(context).primaryColor,
-                        )
-                      : Container(),
-                )
-              ],
+                  Text(
+                    "Ryan Susana",
+                    style: Theme.of(context).textTheme.headline3,
+                  ),
+                ],
+              ),
             ),
-          ),
-        );
-      },
+            SizedBox(
+              width: 70,
+              height: 70,
+              child: CircularProgressIndicator(
+                strokeWidth: 2.0,
+                backgroundColor: Theme.of(context).primaryColor,
+              ),
+            )
+          ],
+        ),
+      ),
     );
   }
 }
