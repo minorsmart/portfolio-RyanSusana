@@ -9,15 +9,16 @@ import 'package:uuid/uuid.dart';
 import 'domain.dart';
 
 class PostCard extends StatelessWidget {
-  const PostCard({Key key, @required this.cardSize, this.post})
+  const PostCard({Key key, @required this.cardSize, this.post, this.categoryId})
       : super(key: key);
 
   final Post post;
+  final String categoryId;
   final double cardSize;
 
   @override
   Widget build(BuildContext context) {
-    String category = Provider.of<Category>(context).id;
+    String category = this.categoryId ?? Provider.of<Category>(context).id;
     return Material(
       clipBehavior: Clip.hardEdge,
       borderRadius: BorderRadius.all(Radius.circular(8)),
@@ -85,12 +86,39 @@ class PostCard extends StatelessWidget {
   }
 }
 
+class FuturePostList extends StatelessWidget {
+  final String categoryId;
+
+  final Map<String, String> qry;
+
+  const FuturePostList({Key key, this.categoryId, this.qry}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return FutureBuilder<Iterable<Post>>(
+      future: Post.qry(qry),
+      builder: (context, snapshot) {
+        if (snapshot.hasData) {
+          return PostList(
+            posts: snapshot.data.toList(),
+            categoryId: categoryId,
+          );
+        } else {
+          return Container();
+        }
+      },
+    );
+  }
+}
+
 class PostList extends StatelessWidget {
   final List<Post> posts;
+  final String categoryId;
 
   const PostList({
     Key key,
     this.posts,
+    this.categoryId,
   }) : super(key: key);
 
   @override
@@ -106,6 +134,7 @@ class PostList extends StatelessWidget {
                   padding: EdgeInsets.only(left: 20.0, top: 8, bottom: 8),
                   child: PostCard(
                     cardSize: cardSize,
+                    categoryId: categoryId,
                     post: post,
                   ),
                 ),
@@ -225,10 +254,18 @@ class PostContent extends StatelessWidget {
           width: wideScreen ? size.width / 2 : double.infinity,
           child: wideScreen
               ? SingleChildScrollView(
-                  child: PostHtmlContent(post: post),
+                  child: Column(
+                    children: <Widget>[
+                      PostHtmlContent(post: post),
+                    ],
+                  ),
                 )
-              : PostHtmlContent(
-                  post: post,
+              : Column(
+                  children: <Widget>[
+                    PostHtmlContent(
+                      post: post,
+                    ),
+                  ],
                 ),
         )
       ],
