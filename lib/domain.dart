@@ -36,7 +36,7 @@ class Post {
 
   static Future<Iterable<Post>> qry(
       [Map<String, String> options = const {}]) async {
-    Uri uri = Uri.https(null, "ryansusana.com/posts", options);
+    Uri uri = Uri.https(null, "//ryansusana.com/posts", options);
 
     var response = await http.get(uri);
 
@@ -68,7 +68,7 @@ class Category {
 
   static Future<Iterable<Category>> qry(
       [Map<String, String> options = const {}]) async {
-    Uri uri = Uri.https(null, "ryansusana.com/categories", options);
+    Uri uri = Uri.https(null, "//ryansusana.com/categories", options);
 
     print(uri);
     var response = await http.get(uri);
