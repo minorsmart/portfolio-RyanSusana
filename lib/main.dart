@@ -2,6 +2,7 @@ import 'package:fluro/fluro.dart';
 import "package:flutter/material.dart";
 import 'package:flutter/services.dart';
 import "package:flutter/widgets.dart";
+import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import "package:google_fonts/google_fonts.dart";
 import 'package:portfolio_minor/post.dart';
 import 'package:provider/provider.dart';
@@ -122,19 +123,31 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
               onRefresh: () {
                 return loadCategories();
               },
-              child: ListView(
-                children: categories
-                    .where((element) => element.posts.length > 0)
-                    .toList()
-                    .asMap()
-                    .entries
-                    .map((entry) => CategorySection(
-                          category: entry.value,
-                          backgroundColor: entry.key.isOdd
-                              ? Color(0xFF222222)
-                              : Theme.of(context).appBarTheme.color,
-                        ))
-                    .toList(),
+              child: AnimationLimiter(
+                child: ListView(
+                  children: AnimationConfiguration.toStaggeredList(
+                    duration: Duration(milliseconds: 1000),
+                    delay: Duration(milliseconds: 500),
+                    children: categories
+                        .where((element) => element.posts.length > 0)
+                        .toList()
+                        .asMap()
+                        .entries
+                        .map((entry) => CategorySection(
+                              category: entry.value,
+                              backgroundColor: entry.key.isOdd
+                                  ? Color(0xFF222222)
+                                  : Theme.of(context).appBarTheme.color,
+                            ))
+                        .toList(),
+                    childAnimationBuilder: (child) => SlideAnimation(
+                      verticalOffset: 20,
+                      child: FadeInAnimation(
+                        child: child,
+                      ),
+                    ),
+                  ),
+                ),
               ),
             ),
           ),
@@ -203,14 +216,6 @@ class _SplashState extends State<Splash> with SingleTickerProviderStateMixin {
                 ],
               ),
             ),
-            SizedBox(
-              width: 70,
-              height: 70,
-              child: CircularProgressIndicator(
-                strokeWidth: 2.0,
-                backgroundColor: Theme.of(context).primaryColor,
-              ),
-            )
           ],
         ),
       ),

@@ -2,6 +2,7 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_html/flutter_html.dart';
+import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:uuid/uuid.dart';
@@ -126,23 +127,35 @@ class PostList extends StatelessWidget {
     var cardSize = min(MediaQuery.of(context).size.width * 0.6, 300);
     return SizedBox(
       height: cardSize,
-      child: ListView(
-        scrollDirection: Axis.horizontal,
-        children: <Widget>[
-          ...this.posts.map(
-                (post) => Padding(
-                  padding: EdgeInsets.only(left: 20.0, top: 8, bottom: 8),
-                  child: PostCard(
-                    cardSize: cardSize,
-                    categoryId: categoryId,
-                    post: post,
+      child: AnimationLimiter(
+        child: ListView(
+          scrollDirection: Axis.horizontal,
+          children: AnimationConfiguration.toStaggeredList(
+            duration: Duration(milliseconds: 700),
+            delay: Duration(milliseconds: 500),
+            children: <Widget>[
+              ...this.posts.map(
+                    (post) => Padding(
+                      padding: EdgeInsets.only(left: 20.0, top: 8, bottom: 8),
+                      child: PostCard(
+                        cardSize: cardSize,
+                        categoryId: categoryId,
+                        post: post,
+                      ),
+                    ),
                   ),
-                ),
+              SizedBox(
+                width: 20,
               ),
-          SizedBox(
-            width: 20,
-          )
-        ],
+            ],
+            childAnimationBuilder: (widget) => SlideAnimation(
+              horizontalOffset: 60.0,
+              child: FadeInAnimation(
+                child: widget,
+              ),
+            ),
+          ),
+        ),
       ),
     );
   }
