@@ -259,7 +259,7 @@ class PostHtmlContent extends StatelessWidget {
         },
         defaultTextStyle:
             Theme.of(context).textTheme.bodyText1.copyWith(color: Colors.white),
-        data: post.content,
+        data: post.content ?? '<p>No content...</p>',
       ),
     );
   }

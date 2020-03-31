@@ -92,7 +92,15 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
 
     initializedAnimation = AnimationController(
         vsync: this, duration: Duration(milliseconds: 1000));
+  }
 
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    load();
+  }
+
+  void load() {
     if (Domain.needToLoad) {
       Future.wait([
         loadCategories(),
