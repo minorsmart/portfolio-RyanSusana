@@ -106,7 +106,7 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
   Widget build(BuildContext context) {
     if (categories == null) {
       return Container(
-        color: Colors.green,
+        color: Theme.of(context).appBarTheme.color,
       );
     }
     return WillPopScope(
