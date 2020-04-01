@@ -124,38 +124,27 @@ class PostList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    var cardSize = min(MediaQuery.of(context).size.width * 0.6, 300);
+    var cardSize = min(MediaQuery.of(context).size.width * 0.6, 300)
+        .toDouble();
     return SizedBox(
       height: cardSize,
-      child: AnimationLimiter(
-        child: ListView(
-          scrollDirection: Axis.horizontal,
-          children: AnimationConfiguration.toStaggeredList(
-            duration: Duration(milliseconds: 700),
-            delay: Duration(milliseconds: 500),
-            children: <Widget>[
-              ...this.posts.map(
-                    (post) => Padding(
-                      padding: EdgeInsets.only(left: 20.0, top: 8, bottom: 8),
-                      child: PostCard(
-                        cardSize: cardSize,
-                        categoryId: categoryId,
-                        post: post,
-                      ),
-                    ),
-                  ),
-              SizedBox(
-                width: 20,
-              ),
-            ],
-            childAnimationBuilder: (widget) => SlideAnimation(
-              horizontalOffset: 60.0,
-              child: FadeInAnimation(
-                child: widget,
+      child: ListView(
+        scrollDirection: Axis.horizontal,
+        children: <Widget>[
+          ...this.posts.map(
+                (post) => Padding(
+              padding: EdgeInsets.only(left: 20.0, top: 8, bottom: 8),
+              child: PostCard(
+                cardSize: cardSize,
+                categoryId: categoryId,
+                post: post,
               ),
             ),
           ),
-        ),
+          const SizedBox(
+            width: 20,
+          ),
+        ],
       ),
     );
   }
