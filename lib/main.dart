@@ -126,6 +126,7 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
               return loadCategories();
             },
             child: CustomScrollView(
+              physics: BouncingScrollPhysics(),
               controller: controller,
               slivers: <Widget>[
                 SliverAppBar(
