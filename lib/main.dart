@@ -130,8 +130,8 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
               controller: controller,
               slivers: <Widget>[
                 SliverAppBar(
-                  pinned: true,
-                  leading: Icon(Icons.menu),
+                  pinned: false,
+//                  leading: Icon(Icons.menu),
                   expandedHeight: headerHeight,
                   flexibleSpace: FlexibleSpaceBar(
                     background: SizedBox(
