@@ -257,6 +257,7 @@ class PostContent extends StatelessWidget {
               ? SingleChildScrollView(
                   child: Column(
                     children: <Widget>[
+                      PostHeader(padding: padding, post: post),
                       PostHtmlContent(post: post, padding: padding),
                     ],
                   ),
@@ -264,21 +265,7 @@ class PostContent extends StatelessWidget {
               : Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[
-                    Padding(
-                      padding: EdgeInsets.only(
-                          top: padding, left: padding, right: padding),
-                      child: Wrap(
-                        spacing: 8,
-                        runSpacing: 8,
-                        children: post.categoryIds
-                            .map(
-                              (e) => Chip(
-                                  label: Text(Domain.getCategory(e).name,
-                                      style: TextStyle(fontSize: 14))),
-                            )
-                            .toList(),
-                      ),
-                    ),
+                    PostHeader(padding: padding, post: post),
                     PostHtmlContent(
                       post: post,
                       padding: padding,
@@ -286,6 +273,46 @@ class PostContent extends StatelessWidget {
                   ],
                 ),
         )
+      ],
+    );
+  }
+}
+
+class PostHeader extends StatelessWidget {
+  const PostHeader({
+    Key key,
+    @required this.padding,
+    @required this.post,
+  }) : super(key: key);
+
+  final double padding;
+  final Post post;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: <Widget>[
+        Padding(
+          padding: EdgeInsets.only(left: padding, right: padding, top: padding),
+          child: Text(post.title,
+              style:
+                  Theme.of(context).textTheme.headline3.copyWith(fontSize: 24)),
+        ),
+        Padding(
+          padding:
+              EdgeInsets.only(top: padding / 2, left: padding, right: padding),
+          child: Wrap(
+            spacing: 5,
+            children: post.categoryIds
+                .map(
+                  (e) => Chip(
+                      label: Text(Domain.getCategory(e).name,
+                          style: TextStyle(fontSize: 14))),
+                )
+                .toList(),
+          ),
+        ),
       ],
     );
   }
@@ -304,7 +331,7 @@ class PostHtmlContent extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: EdgeInsets.all(padding),
+      padding: EdgeInsets.only(bottom: padding, left: padding, right: padding),
       child: Html(
         onLinkTap: (url) async {
           if (await canLaunch(url)) {
