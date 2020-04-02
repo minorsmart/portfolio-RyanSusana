@@ -257,7 +257,9 @@ class PostContent extends StatelessWidget {
               ? SingleChildScrollView(
                   child: Column(
                     children: <Widget>[
-                      PostHeader(padding: padding, post: post),
+                      SizedBox(
+                          width: double.infinity,
+                          child: PostHeader(padding: padding, post: post)),
                       PostHtmlContent(post: post, padding: padding),
                     ],
                   ),
@@ -265,7 +267,9 @@ class PostContent extends StatelessWidget {
               : Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[
-                    PostHeader(padding: padding, post: post),
+                    SizedBox(
+                        width: double.infinity,
+                        child: PostHeader(padding: padding, post: post)),
                     PostHtmlContent(
                       post: post,
                       padding: padding,
@@ -301,7 +305,7 @@ class PostHeader extends StatelessWidget {
         ),
         Padding(
           padding:
-              EdgeInsets.only(top: padding / 2, left: padding, right: padding),
+              EdgeInsets.only(top: 10, left: padding, right: padding),
           child: Wrap(
             spacing: 5,
             children: post.categoryIds
