@@ -2,7 +2,6 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_html/flutter_html.dart';
-import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:uuid/uuid.dart';
@@ -124,8 +123,7 @@ class PostList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    var cardSize = min(MediaQuery.of(context).size.width * 0.6, 300)
-        .toDouble();
+    var cardSize = min(MediaQuery.of(context).size.width * 0.6, 300).toDouble();
     return SizedBox(
       height: cardSize,
       child: ListView(
@@ -133,14 +131,14 @@ class PostList extends StatelessWidget {
         children: <Widget>[
           ...this.posts.map(
                 (post) => Padding(
-              padding: EdgeInsets.only(left: 20.0, top: 8, bottom: 8),
-              child: PostCard(
-                cardSize: cardSize,
-                categoryId: categoryId,
-                post: post,
+                  padding: EdgeInsets.only(left: 20.0, top: 8, bottom: 8),
+                  child: PostCard(
+                    cardSize: cardSize,
+                    categoryId: categoryId,
+                    post: post,
+                  ),
+                ),
               ),
-            ),
-          ),
           const SizedBox(
             width: 20,
           ),
@@ -237,6 +235,7 @@ class PostContent extends StatelessWidget {
   Widget build(BuildContext context) {
     var size = MediaQuery.of(context).size;
     bool wideScreen = size.width > size.height;
+    double padding = min(100.0, MediaQuery.of(context).size.width / 20);
     return Flex(
       direction: wideScreen ? Axis.horizontal : Axis.vertical,
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -258,14 +257,31 @@ class PostContent extends StatelessWidget {
               ? SingleChildScrollView(
                   child: Column(
                     children: <Widget>[
-                      PostHtmlContent(post: post),
+                      PostHtmlContent(post: post, padding: padding),
                     ],
                   ),
                 )
               : Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[
+                    Padding(
+                      padding: EdgeInsets.only(
+                          top: padding, left: padding, right: padding),
+                      child: Wrap(
+                        spacing: 8,
+                        runSpacing: 8,
+                        children: post.categoryIds
+                            .map(
+                              (e) => Chip(
+                                  label: Text(Domain.getCategory(e).name,
+                                      style: TextStyle(fontSize: 14))),
+                            )
+                            .toList(),
+                      ),
+                    ),
                     PostHtmlContent(
                       post: post,
+                      padding: padding,
                     ),
                   ],
                 ),
@@ -279,15 +295,16 @@ class PostHtmlContent extends StatelessWidget {
   const PostHtmlContent({
     Key key,
     @required this.post,
+    this.padding,
   }) : super(key: key);
 
   final Post post;
+  final double padding;
 
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding:
-          EdgeInsets.all(min(100.0, MediaQuery.of(context).size.width / 20)),
+      padding: EdgeInsets.all(padding),
       child: Html(
         onLinkTap: (url) async {
           if (await canLaunch(url)) {

@@ -122,5 +122,5 @@ class Domain with ChangeNotifier {
 
   static List<Post> get posts => _allPosts;
 
-  Category getCategory(String categoryId) => _allCategories[categoryId];
+  static Category getCategory(String categoryId) => _allCategories[categoryId];
 }
