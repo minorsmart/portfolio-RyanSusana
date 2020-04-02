@@ -305,7 +305,7 @@ class PostHeader extends StatelessWidget {
         ),
         Padding(
           padding:
-              EdgeInsets.only(top: 10, left: padding, right: padding),
+              EdgeInsets.only(top: 10, left: padding, right: padding, bottom: 20),
           child: Wrap(
             spacing: 5,
             children: post.categoryIds
