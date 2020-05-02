@@ -344,8 +344,6 @@ class PostHtmlContent extends StatelessWidget {
             print('Could not launch $url');
           }
         },
-        defaultTextStyle:
-            Theme.of(context).textTheme.bodyText1.copyWith(color: Colors.white),
         data: post.content ?? '<p>No content...</p>',
       ),
     );
