@@ -304,8 +304,8 @@ class PostHeader extends StatelessWidget {
                   Theme.of(context).textTheme.headline3.copyWith(fontSize: 24)),
         ),
         Padding(
-          padding:
-              EdgeInsets.only(top: 10, left: padding, right: padding, bottom: 20),
+          padding: EdgeInsets.only(
+              top: 10, left: padding, right: padding, bottom: 20),
           child: Wrap(
             spacing: 5,
             children: post.categoryIds
@@ -334,6 +334,7 @@ class PostHtmlContent extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    var content = post == null ? '' : post.content ?? '<p>No content...</p>';
     return Padding(
       padding: EdgeInsets.only(bottom: padding, left: padding, right: padding),
       child: Html(
@@ -344,7 +345,7 @@ class PostHtmlContent extends StatelessWidget {
             print('Could not launch $url');
           }
         },
-        data: post.content ?? '<p>No content...</p>',
+        data: content.replaceAll("<br>", ""),
       ),
     );
   }

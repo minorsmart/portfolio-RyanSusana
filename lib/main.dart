@@ -2,10 +2,10 @@ import 'package:fluro/fluro.dart';
 import "package:flutter/material.dart";
 import 'package:flutter/services.dart';
 import "package:flutter/widgets.dart";
-import 'package:flutter_html/flutter_html.dart';
 import "package:google_fonts/google_fonts.dart";
 import 'package:portfolio_minor/post.dart';
 import 'package:provider/provider.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import 'category.dart';
 import "domain.dart";
@@ -219,13 +219,24 @@ class OpeningCard extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: <Widget>[
                   Text(
-                    "Welcome to the portfolio of",
+                    "Welcome to the MSI portfolio of",
                     style: Theme.of(context).textTheme.bodyText1,
                   ),
                   Text(
                     "Ryan Susana",
                     style: Theme.of(context).textTheme.headline3,
                   ),
+                  FlatButton(
+                    onPressed: () async {
+                      var url = "https://www.youtube.com/watch?v=j5fY5NFXSkg";
+                      if (await canLaunch(url)) {
+                        await launch(url);
+                      } else {
+                        print('Could not launch $url');
+                      }
+                    },
+                    child: Text("View Minor Video"),
+                  )
                 ],
               ),
             ),
