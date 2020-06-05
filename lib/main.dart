@@ -176,7 +176,8 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
                   delegate: SliverChildListDelegate(
                     [
                       ...categories
-                          .where((element) => element.posts.length > 0)
+                          .where((element) =>
+                              element.posts.length > 0 && element.main)
                           .toList()
                           .asMap()
                           .entries
@@ -220,13 +221,23 @@ class OpeningCard extends StatelessWidget {
                 children: <Widget>[
                   Text(
                     "Welcome to the MSI portfolio of",
-                    style: Theme.of(context).textTheme.bodyText1,
+                    style: Theme.of(context)
+                        .textTheme
+                        .bodyText1
+                        .copyWith(fontSize: 16),
+                  ),
+                  SizedBox(
+                    height: 10,
                   ),
                   Text(
                     "Ryan Susana",
                     style: Theme.of(context).textTheme.headline3,
                   ),
+                  SizedBox(
+                    height: 20,
+                  ),
                   FlatButton(
+                    color: Theme.of(context).primaryColor,
                     onPressed: () async {
                       var url = "https://www.youtube.com/watch?v=j5fY5NFXSkg";
                       if (await canLaunch(url)) {
@@ -235,7 +246,7 @@ class OpeningCard extends StatelessWidget {
                         print('Could not launch $url');
                       }
                     },
-                    child: Text("View Minor Video"),
+                    child: Text("View Project Video"),
                   )
                 ],
               ),

@@ -52,11 +52,13 @@ class Post {
 @JsonSerializable()
 class Category {
   final String id, name, description;
+  final bool main;
   List<Post> posts;
 
   Category({
     this.id,
     this.name: "Smart Connection",
+    this.main: true,
     this.description:
         "Lorem ipsum dolor sit amet, lorem utinam cu his. Has alterum ceteros similique eu, docendi necessitatibus eam ei. Agam numquam bonorum ut sed.",
     this.posts: const <Post>[],

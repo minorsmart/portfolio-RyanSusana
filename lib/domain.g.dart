@@ -31,6 +31,7 @@ Category _$CategoryFromJson(Map<String, dynamic> json) {
   return Category(
     id: json['id'] as String,
     name: json['name'] as String,
+    main: json['main'] as bool,
     description: json['description'] as String,
     posts: (json['posts'] as List)
         ?.map(
@@ -43,5 +44,6 @@ Map<String, dynamic> _$CategoryToJson(Category instance) => <String, dynamic>{
       'id': instance.id,
       'name': instance.name,
       'description': instance.description,
+      'main': instance.main,
       'posts': instance.posts,
     };
