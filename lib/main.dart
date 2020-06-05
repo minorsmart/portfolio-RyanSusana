@@ -2,6 +2,7 @@ import 'package:fluro/fluro.dart';
 import "package:flutter/material.dart";
 import 'package:flutter/services.dart';
 import "package:flutter/widgets.dart";
+import 'package:flutter_html/flutter_html.dart';
 import "package:google_fonts/google_fonts.dart";
 import 'package:portfolio_minor/post.dart';
 import 'package:provider/provider.dart';
