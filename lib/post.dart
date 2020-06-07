@@ -176,28 +176,30 @@ class _PostScreenState extends State<PostScreen> {
 
     var size = MediaQuery.of(context).size;
     bool wideScreen = size.width > size.height;
-    return ConstrainedBox(
-      constraints: BoxConstraints(maxWidth: 200, maxHeight: 500),
-      child: Scaffold(
-        appBar: AppBar(
-          elevation: 0,
-          title: Text(post.title),
-        ),
-        body: Container(
-          child: !wideScreen
-              ? RefreshIndicator(
-                  color: Theme.of(context).primaryColor,
-                  onRefresh: () => reloadPost(),
-                  child: SingleChildScrollView(
-                    physics: AlwaysScrollableScrollPhysics(),
-                    child: PostContent(
-                      tag: tag,
-                      post: post,
-                    ),
+    return Scaffold(
+      appBar: AppBar(
+        elevation: 0,
+        title: Text(post.title),
+      ),
+      floatingActionButton: post.downloads != null && post.downloads.isNotEmpty
+          ? DownloadButton(
+              downloads: post.downloads,
+            )
+          : null,
+      body: Container(
+        child: !wideScreen
+            ? RefreshIndicator(
+                color: Theme.of(context).primaryColor,
+                onRefresh: () => reloadPost(),
+                child: SingleChildScrollView(
+                  physics: AlwaysScrollableScrollPhysics(),
+                  child: PostContent(
+                    tag: tag,
+                    post: post,
                   ),
-                )
-              : PostContent(tag: widget.tag, post: post),
-        ),
+                ),
+              )
+            : PostContent(tag: widget.tag, post: post),
       ),
     );
   }
@@ -347,6 +349,53 @@ class PostHtmlContent extends StatelessWidget {
         },
         data: content.replaceAll("<br>", ""),
       ),
+    );
+  }
+}
+
+class DownloadButton extends StatelessWidget {
+  final List<Download> downloads;
+
+  const DownloadButton({Key key, this.downloads}) : super(key: key);
+
+  openUrl(Download download) async {
+    var url = "https://ryansusana.com" + download.file;
+    if (await canLaunch(url)) {
+      await launch(url);
+    } else {
+      print('Could not launch $url');
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    if (downloads.length == 1) {
+      return FloatingActionButton(
+        backgroundColor: Theme.of(context).primaryColor,
+        onPressed: () => openUrl(downloads.first),
+        child: Icon(Icons.file_download),
+      );
+    }
+    return PopupMenuButton<Download>(
+      child: FloatingActionButton(
+        backgroundColor: Theme.of(context).primaryColor,
+        onPressed: null,
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text(downloads.length.toString()),
+            Icon(Icons.file_download),
+          ],
+        ),
+      ),
+      onSelected: (d) => openUrl(d),
+      itemBuilder: (BuildContext context) => this
+          .downloads
+          .map((download) => PopupMenuItem<Download>(
+                value: download,
+                child: Text(download.name),
+              ))
+          .toList(),
     );
   }
 }

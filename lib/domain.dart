@@ -8,10 +8,22 @@ import 'package:json_annotation/json_annotation.dart';
 part 'domain.g.dart';
 
 @JsonSerializable(nullable: true)
+class Download {
+  final String name;
+  final String file;
+
+  const Download({this.name, this.file});
+
+  factory Download.fromJson(Map<String, dynamic> json) =>
+      _$DownloadFromJson(json);
+}
+
+@JsonSerializable(nullable: true)
 class Post {
   final String id, title, content, image;
   final int week;
   final List<String> categoryIds;
+  final List<Download> downloads;
 
   const Post({
     this.id: "x",
@@ -21,6 +33,7 @@ class Post {
     this.image:
         "https://p.bigstockphoto.com/GeFvQkBbSLaMdpKXF1Zv_bigstock-Aerial-View-Of-Blue-Lakes-And--227291596.jpg",
     this.categoryIds: const <String>[],
+    this.downloads: const <Download>[],
   });
 
   factory Post.fromJson(Map<String, dynamic> json) => _$PostFromJson(json);
