@@ -377,6 +377,7 @@ class DownloadButton extends StatelessWidget {
       );
     }
     return PopupMenuButton<Download>(
+      tooltip: "Select download",
       child: FloatingActionButton(
         backgroundColor: Theme.of(context).primaryColor,
         onPressed: null,
